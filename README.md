@@ -2,6 +2,7 @@
 This application is a simple tool that converts spoken words into text using Python's Tkinter for the graphical user interface and the SpeechRecognition library for speech recognition. It leverages the Google Web Speech API to transcribe speech in real-time.
 
 # Installation
+https://github.com/ArathiHembram/Python-Speech-Recognition.git
 
 # Usage
 Launch the application.
