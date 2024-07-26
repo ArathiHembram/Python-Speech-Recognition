@@ -1,0 +1,213 @@
+Here's a line-by-line explanation of the code for your Speech to Text application:
+-------------------------------------------------------------------------------------------------------
+import tkinter as tk
+import speech_recognition as sr
+import time
+from PIL import Image, ImageTk
+import threading
+	--------------------------------------------------------
+Imports necessary libraries:
+tkinter: Used for creating the graphical user interface.
+speech_recognition: A library for recognizing speech and converting it into text.
+time: Used for adding delays.
+PIL (Pillow): A library for handling images, here used for displaying an image of a microphone.
+threading: Allows speech recognition to run in a separate thread to keep the GUI responsive.
+
+	----------------------------------------------------------------------------------------------------------------------------------------------------
+def recognize_speech():
+    def _recognize_speech():
+        # Initialize recognizer
+        recognizer = sr.Recognizer()
+	---------------------------------------------------------
+Defines a function recognize_speech():
+Nested function _recognize_speech():
+sr.Recognizer(): Initializes the speech recognizer object.
+
+
+	---------------------------------------------------------------------------------------------------------------------------------------------------
+        with sr.Microphone() as source:
+            # Clear previous text
+            text_area.delete(1.0, tk.END)
+            
+            # Notify user
+            text_area.insert(tk.END, "Listening...\n")
+            root.update_idletasks()  # Update the GUI to display the message immediately
+            
+            # Wait for a second before starting to listen
+            time.sleep(1)
+            
+            # Listen for speech
+            audio_data = recognizer.listen(source, phrase_time_limit=10)  # Set phrase time limit
+
+	---------------------------------------------------------
+Accesses the microphone:
+sr.Microphone(): Opens the microphone for input.
+text_area.delete(1.0, tk.END): Clears any existing text in the text area.
+text_area.insert(tk.END, "Listening...\n"): Informs the user that the system is listening.
+root.update_idletasks(): Updates the GUI to immediately show the "Listening..." message.
+time.sleep(1): Adds a brief delay before starting to listen.
+recognizer.listen(): Listens to the microphone for up to 10 seconds (phrase time limit) and captures the audio data.
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------
+
+            try:
+                # Recognize speech using Google Speech Recognition
+                text = recognizer.recognize_google(audio_data)
+                # Display recognized text
+                text_area.insert(tk.END, text)
+            except sr.UnknownValueError:
+                text_area.insert(tk.END, "Could not understand audio")
+            except sr.RequestError:
+                text_area.insert(tk.END, "Could not request results from Google Speech Recognition service")
+
+	--------------------------------------------------------
+
+Handles the recognition process and potential errors:
+recognizer.recognize_google(audio_data): Sends the captured audio data to Google's speech recognition service and returns the recognized text.
+Exception handling:
+sr.UnknownValueError: Occurs if the audio could not be understood. The message "Could not understand audio" is displayed.
+sr.RequestError: Occurs if there's an issue connecting to the Google service. The message "Could not request results from Google Speech Recognition service" is displayed.
+
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------
+    # Create a thread to run the speech recognition
+    threading.Thread(target=_recognize_speech).start()
+
+	--------------------------------------------------------
+Runs the speech recognition function in a separate thread:
+This ensures that the GUI remains responsive while the application listens and processes the speech.
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------
+# Initialize Tkinter window
+root = tk.Tk()
+root.title("Speech Recognition")
+root.geometry('1100x320')  # x, y
+root.resizable(0, 0)  # cannot resize the box
+
+	--------------------------------------------------------
+Sets up the main Tkinter window:
+root = tk.Tk(): Creates the main window.
+root.title(): Sets the window title.
+root.geometry('1100x320'): Sets the window size.
+root.resizable(0, 0): Disables window resizing.
+
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------
+# Set the background color of the main window
+root.configure(bg='#2E2E2E')  # Gray-black background color
+
+Configures the background color of the main window:
+root.configure(bg='#2E2E2E'): Sets the background color to a dark gray.
+
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------
+# Heading
+tk.Label(root, text="Speech To Text", height=2, width=50, font=" Arial 15", bg='#2E2E2E', fg='white').pack()
+
+Adds a heading label:
+tk.Label(): Creates a label widget.
+
+root: The parent window.
+text="Speech To Text": Sets the label text.
+height=2, width=50: Sets the label dimensions.
+font=" Arial 15": Sets the font style and size.
+bg='#2E2E2E', fg='white': Sets the background and foreground colors.
+.pack(): Places the label in the window.
+
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------
+# Introduction
+tk.Label(root, text="~Translate spoken words into text~", height=2, width=50, font="Arial 12", bg='#2E2E2E', fg='white').pack()
+
+	--------------------------------------------------------
+Adds an introduction label:
+Similar to the heading label, but with different text and font size.
+
+
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------
+# Create a microphone icon
+# Load the image using Pillow
+image_path = r"C:\Users\Arathi Hembram\Desktop\Arathi\Projects(self)\Python-Speech-Recognition-\backup\mic.png"
+image = Image.open(image_path)
+
+# Resize the image using Pillow
+new_size = (100, 100)  # Width, Height
+resized_image = image.resize(new_size, Image.LANCZOS)
+photo = ImageTk.PhotoImage(resized_image)
+
+# Create a label with the image
+label = tk.Label(root, image=photo)
+label.image = photo  # Keep a reference to avoid garbage collection
+
+# Place the label using the place geometry manager
+label.place(x=165, y=120)  # Change x and y to the desired position
+
+	--------------------------------------------------------
+Loads and displays a microphone image:
+image_path: Specifies the path to the image file.
+Image.open(image_path): Opens the image.
+image.resize(new_size, Image.LANCZOS): Resizes the image to 100x100 pixels.
+ImageTk.PhotoImage(resized_image): Converts the resized image to a format Tkinter can use.
+tk.Label(root, image=photo): Creates a label widget to display the image.
+label.image = photo: Keeps a reference to the image to prevent garbage collection.
+label.place(x=165, y=120): Places the label at the specified position.
+
+
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------
+# Create a button to start speech recognition
+recognize_button = tk.Button(root, text="Start Speech", command=recognize_speech, height=2, width=20, bg='#4A4A4A', fg='white')
+recognize_button.place(x=145, y=250)
+
+Adds a button to start speech recognition:
+tk.Button(): Creates a button widget.
+
+root: The parent window.
+text="Start Speech": Sets the button text.
+
+command=recognize_speech: Sets the function to be called when the button is clicked.
+
+height=2, width=20: Sets the button size.
+
+bg='#4A4A4A', fg='white': Sets the background and foreground colors.
+
+recognize_button.place(x=145, y=250): Places the button at the specified position.
+
+
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------
+# Create a label to display the converted text
+tk.Label(root, text="Converted Text", height=2, width=15, font="Arial 12", bg='#2E2E2E', fg='white').place(x=480, y=130)
+
+	--------------------------------------------------------
+Adds a label for the converted text:
+Similar to previous labels, but specifies that this one is for displaying the converted text.
+
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------
+# Create a text area to display recognized text
+text_area = tk.Text(root, height=5, width=50, bg='#2E2E2E', fg='white', insertbackground='white')
+text_area.place(x=480, y=200)
+
+	--------------------------------------------------------
+Adds a text area for displaying recognized text:
+tk.Text(): Creates a text widget for multi-line text input and display.
+height=5, width=50: Sets the dimensions of the text area.
+bg='#2E2E2E', fg='white': Sets the background and text colors.
+insertbackground='white': Sets the color of the text cursor.
+text_area.place(x=480, y=200): Places the text area at the specified position.
+
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------
+# Run the Tkinter event loop
+root.mainloop()
+
+	--------------------------------------------------------
+Starts the Tkinter event loop:
+root.mainloop(): Enters the main event loop, waiting for user interaction and updating the GUI as needed.
+This detailed explanation provides insights into the functionality and purpose of each line in the code.
+
+
+
+	--------------------------------------------------------------------------------------------------------------------------------------------------
